@@ -1,0 +1,69 @@
+\documentclass[a4paper,fontset=ubuntu,12pt]{ctexart}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{fontspec}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{ctex}
+%使用STXingkai华文行楷字体
+\setCJKfamilyfont{hyht}[Path=font/]{hanyiheiti.otf}
+\newcommand{\hyht}{\CJKfamily{hyht}}
+%使用思源宋体
+\setCJKfamilyfont{syst}[Path=font/]{SourceHanSerifSC-Regular.otf}
+\newcommand{\syst}{\CJKfamily{syst}}
+\setCJKmainfont[Path=font/]{SourceHanSerifSC-Regular.otf}
+
+\title{\kaishu \huge \textcolor{purple}{数学手册}}
+\author{未至之}
+\date{\today}
+\begin{document}
+\maketitle
+\newpage
+\section{微分方程}
+{\kaishu 主要就三种常见的微分方程形式举例说明解这类题的方法。}
+\subsection{含有 $(y'',y',y,x)$ 的形式的微分方程}
+
+{\kaishu 今天继续昨天的话题，我们来计算年化收益率。年后收益率顾名思义是把当前收益率（日收益率、周收益率、月收益率等）换算成年收益率来计算的，方便投资人比较不同期限的投资。在现实生活中，我们也经常可以接触到“年化收益率”这个词，尤其在余额宝里面，七日年化收益率是很常见的。}
+
+{\hyht  有一个概念我们要搞清楚，年化收益率只是一种理论上的收益率，并不是投资人真正能够获得的收益率。比如最近比较流行的七日年化收益率，不过七日年话收益率是货币基金最近7日的平均收益水平，进行年化后得出的收益率，并不代表基金未来的表现。这里我们比较下年收益率，年收益率是指投资一笔资产一年的实际收益率，是投资人一年中实际的投资报酬。}  
+
+年化收益率的计算跟复利相关，假设投资人持有资产时间为T期，获得的(将要获得)收益率为:${{{\text{R}}_{\text{T}}}}$,一年一共有m个单期（比如以月为单期，一年有12个月），则该资产的年化收益率为：$\frac{{{\text{R}}_{\text{T}}}}{\text{T}}\times \text{m}$ 或$\left[ {{\left( 1+{{\text{R}}_{\text{T}}} \right)}^{1/\text{T}}}-1 \right]\times \text{m}$,其中$\frac{R_t}{T}$和${(1+R_T)}^{1/T}-1$分别是根据T期收益率计算的算术、几何平均数(即单期收益率)，之后将单期收益率转化成年化收益率时是直接乘以一年的期数m，也就是将单期行为复制m次得到的收益率。年化收益率也可以根据下面的式子进行计算：年化收益率$$\text{年化收益率=}={1+R_t}^{1/(T/m)}-1$$ 
+其中$T/m$是T期对应的年数，这种方法是将T时段获得的收益复利$m/T$次，与上一个方法有本质上的不同，结果也是很不一样。
+
+如果$R_T$是不直接给出的，而是由T期里的单期收益率（此单期时间长度可以与T期的单期时间长度不同）计算得出的，则计算就会多处一步。假设现在我们知道某资产T个月内的日收益率序列$r_1$,$r_2$,$\cdots$,$r_N$（N为T个月中包含的天数），如何将其转化成以月为频率进行复利的年化收益率呢？根据上面的公式，$R_T$要根据$r_1$,$r_2$,$\cdots$,$r_N$计算出来，如果$R_T$是用简单加总的方式计算，则
+$${\text{年化收益率=}\frac{\sum\nolimits_{i=1}^{N}{{r_i}}}{T}\times m } $$
+
+如果$R_T$是用复利的方式计算的，则$$\text{年化收益率=}[(1+r_1)(1+r_2)\cdots(1+r_N)]^\frac{1}{T/m}-1$$
+\textbf{R语言计算年化收益率}
+
+\begin{table}[h]
+library(quantmod)\\
+PRSimpleret=periodReturn(close,period="daily",type="arithmetic")\\
+head(PRSimpleret)\\
+\end{table}
+在R语言中，我们当然可以根据上述公式情况自己编写代码来计算年化收益率。不过在PerformanceAnalytics包中有现成的函数Return.annualized（）。其具体用法为：Return.annualized（R，scale=NA，geometric=TRUE）。
+\begin{itemize}
+\item 其中R表示我们要年化的收益率序列
+\item scale表示一年中包含单期的期数，如果是日收益率则scale=252，如果是月收益率序列则scale=12，如果是季度收益率序列则scale=4
+\item geometry=TRUE（False）对应计算年收益率的两种方法，geometry=TRUE采用如下公式：
+$$\text{年化收益率=}\{[(1+r_1)(1+r_2)\cdots(1+r_T)]^{1/T}\}^m-1$$\\
+geometric=FALSE采用的是
+$$\text{年化收益率=}\frac{\sum\nolimits_{i=1}^Tr_i}{T}\times m$$
+\begin{table}[h]
+Ansimpleret<-Return.annualized(simpleret[-1],scale=252) \\
+Ansimpleret\\
+Annualized Return 0.5886241\\
+\end{table}
+
+\end{itemize}
+
+
+
+
+
+
+
+
+\end{document}
